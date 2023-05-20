@@ -45,11 +45,6 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(express_1.default.urlencoded({ extended: false }));
-const HEADERS = {
-    name: process.env.API_NAME,
-    key: process.env.API_KEY,
-    secret: process.env.API_SECRET
-};
 const fetch_market = (base_URL, pair1, pair2) => __awaiter(void 0, void 0, void 0, function* () {
     let fetch = yield axios_1.default.get(`${base_URL}/api/v1/market/histories?symbol=${pair1}-${pair2}`);
     return fetch.data;
@@ -87,6 +82,3 @@ const port = process.env.PORT;
 app.listen(port, () => {
     return console.log(`⚡️ server is on port http://localhost:${port}`);
 });
-// fetch data from kucoin REST api
-// create a API that can show me cumulative delta for a specific asset
-// DELTA_NEUTRAL_CHECK
