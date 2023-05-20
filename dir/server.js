@@ -54,7 +54,7 @@ const fetch_market = (base_URL, pair1, pair2) => __awaiter(void 0, void 0, void 
     let fetch = yield axios_1.default.get(`${base_URL}/api/v1/market/histories?symbol=${pair1}-${pair2}`);
     return fetch.data;
 });
-app.get('/api/v1/delta', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/api/v1/delta', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let base_URL = "https://api.kucoin.com";
     let startDeltaIndex = 0; // neutral 
     /**
@@ -62,23 +62,25 @@ app.get('/api/v1/delta', (req, res) => __awaiter(void 0, void 0, void 0, functio
      *  sell === decrement delta by sum = tot sell from index
      */
     try {
-        let data = yield fetch_market(base_URL, "BTC", "USDC");
+        let data = yield fetch_market(base_URL, "ETH", "USDT");
         let value = data.data;
+        let all_buy = 0;
+        let all_sell = 0;
         for (let i = 0; i < value.length; i++) {
             let type_of_transaction = value[i].side;
             let amount_value = value[i].size;
-            if (type_of_transaction === "sell") {
-                startDeltaIndex -= amount_value;
+            if (type_of_transaction === "buy") {
+                all_buy += parseFloat(amount_value);
             }
             else {
-                startDeltaIndex += amount_value;
+                all_sell += parseFloat(amount_value);
             }
-            console.log("indexvalue :", startDeltaIndex);
         }
-        return res.json({ value });
+        let totalDelta = all_buy - all_sell;
+        return res.json({ totalDelta });
     }
     catch (error) {
-        res.json({ error });
+        next(error);
     }
 }));
 const port = process.env.PORT;
